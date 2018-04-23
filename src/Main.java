@@ -1,28 +1,24 @@
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 /**
  * @author sergeys
  */
 public class Main {
 
     public static void main(String[] args) {
-        //        System.out.println("byte");
-        //        System.out.println("Min: " + Byte.MIN_VALUE);
-        //        System.out.println("Max: " + Byte.MAX_VALUE);
-        //        System.out.println();
-        //
-        //        System.out.println("short");
-        //        System.out.println("Min: " + Short.MIN_VALUE);
-        //        System.out.println("Max: " + Short.MAX_VALUE);
-        //        System.out.println();
-        //
-        //        System.out.println("int");
-        //        System.out.println("Min: " + Integer.MIN_VALUE);
-        //        System.out.println("Max: " + Integer.MAX_VALUE);
-        //        System.out.println();
+
+        System.out.println("byte");
+        System.out.println("Min: " + Byte.MIN_VALUE);
+        System.out.println("Max: " + Byte.MAX_VALUE);
+        System.out.println();
+
+        System.out.println("short");
+        System.out.println("Min: " + Short.MIN_VALUE);
+        System.out.println("Max: " + Short.MAX_VALUE);
+        System.out.println();
+
+        System.out.println("int");
+        System.out.println("Min: " + Integer.MIN_VALUE);
+        System.out.println("Max: " + Integer.MAX_VALUE);
+        System.out.println();
 
         System.out.println("long");
         System.out.printf("Min: %,d\n", Long.MIN_VALUE);
@@ -63,13 +59,15 @@ public class Main {
                                            -1L, -1L, -1L, -1L).toStringCommas());
         System.out.println();
 
+        /*
         try {
-            int bits = 1024;
+            int bits = 2048;
             BufferedWriter writer = new BufferedWriter(new FileWriter(new File("Int" + bits + ".java")));
             writer.write(new IntXGenerator(bits).generateClass());
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
 }

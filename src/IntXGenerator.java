@@ -204,28 +204,8 @@ public class IntXGenerator {
                "     * @return this for chaining\n" +
                "     */\n" +
                "    public Int" + bits + " shiftLeft(int bits) {\n" +
-               "        if (bits < 0) {\n" +
-               "            throw new IllegalArgumentException(\"Cannot shift by negative amount\");\n" +
-               "        }\n" +
-               "        long[] result = new long[LONGS];\n" +
-               "        int longs = bits / 64;\n" +
-               "        int singleBits = bits % 64;\n" +
-               "\n" +
-               "        long mask = ~(-1L << singleBits);\n" +
-               "\n" +
-               "        for (int i = LONGS - 1; i >= 0; i--) {\n" +
-               "            if (i + longs >= LONGS) {\n" +
-               "                result[i] = 0;\n" +
-               "            } else if (i + longs + 1 >= LONGS) {\n" +
-               "                result[i] = (this.data[i + longs] << singleBits);\n" +
-               "            } else {\n" +
-               "                result[i] = ((this.data[i + longs] << singleBits) |\n" +
-               "                                    ((this.data[i + longs + 1] >> (64 - singleBits)) & mask));\n" +
-               "            }\n" +
-               "        }\n" +
-               "\n" +
-               "        System.arraycopy(result, 0, this.data, 0, LONGS);\n" +
-               "        return this;\n" +
+               "        this.data = CommonUtils.shiftLeft(this.data, bits);\n" +
+               "        return this;" +
                "    }\n" +
                "\n" +
                "    /**\n" +
@@ -237,27 +217,8 @@ public class IntXGenerator {
                "     * @return this for chaining\n" +
                "     */\n" +
                "    public Int" + bits + " shiftRightUnsigned(int bits) {\n" +
-               "        if (bits < 0) {\n" +
-               "            throw new IllegalArgumentException(\"Cannot shift by negative amount\");\n" +
-               "        }\n" +
-               "\n" +
-               "        long[] result = new long[LONGS];\n" +
-               "        int longs = bits / 64;\n" +
-               "        int singleBits = bits % 64;\n" +
-               "\n" +
-               "        for (int i = LONGS - 1; i >= 0; i--) {\n" +
-               "            if (i - longs < 0) {\n" +
-               "                result[i] = 0;\n" +
-               "            } else if (i - longs < 1) { //i - bytes == 0\n" +
-               "                result[i] = (this.data[i - longs] >>> singleBits);\n" +
-               "            } else {\n" +
-               "                result[i] = ((this.data[i - longs] >>> singleBits) |\n" +
-               "                                    (this.data[i - longs - 1] << (64 - singleBits)));\n" +
-               "            }\n" +
-               "        }\n" +
-               "\n" +
-               "        System.arraycopy(result, 0, this.data, 0, LONGS);\n" +
-               "        return this;\n" +
+               "        this.data = CommonUtils.shiftRightUnsigned(this.data, bits);\n" +
+               "        return this;" +
                "    }\n" +
                "\n" +
                "    /**\n" +
@@ -269,29 +230,7 @@ public class IntXGenerator {
                "     * @return this for chaining\n" +
                "     */\n" +
                "    public Int" + bits + " shiftRightSigned(int bits) {\n" +
-               "        if (bits < 0) {\n" +
-               "            throw new IllegalArgumentException(\"Cannot shift by negative amount\");\n" +
-               "        }\n" +
-               "\n" +
-               "        long[] result = new long[LONGS];\n" +
-               "        int longs = bits / 64;\n" +
-               "        int singleBits = bits % 64;\n" +
-               "\n" +
-               "        long signLong = data[0] < 0 ? -1L : 0;\n" +
-               "\n" +
-               "        for (int i = LONGS - 1; i >= 0; i--) {\n" +
-               "            if (i - longs < 0) {\n" +
-               "                result[i] = signLong;\n" +
-               "            } else if (i - longs < 1) { //i - bytes == 0\n" +
-               "                result[i] = ((this.data[i - longs] >>> singleBits) |\n" +
-               "                                    (signLong << (64 - singleBits)));\n" +
-               "            } else {\n" +
-               "                result[i] = ((this.data[i - longs] >>> singleBits) |\n" +
-               "                                    (this.data[i - longs - 1] << (64 - singleBits)));\n" +
-               "            }\n" +
-               "        }\n" +
-               "\n" +
-               "        System.arraycopy(result, 0, this.data, 0, LONGS);\n" +
+               "        this.data = CommonUtils.shiftRightSigned(this.data, bits);\n" +
                "        return this;\n" +
                "    }\n" +
                "\n" +

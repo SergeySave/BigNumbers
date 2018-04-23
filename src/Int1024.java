@@ -53,7 +53,6 @@ public final class Int1024 implements Comparable<Int1024> {
      * The returned integer will be sign extended to this integer's length
      *
      * @param num the long value
-     *
      * @return an integer representing the same number as the given long
      */
     public static Int1024 from(long num) {
@@ -78,7 +77,6 @@ public final class Int1024 implements Comparable<Int1024> {
      * WARNING: Advanced method
      *
      * @param parts the data to use (must be length 16)
-     *
      * @return a new integer of the given data
      */
     public static Int1024 bytesOf(long... parts) {
@@ -98,11 +96,59 @@ public final class Int1024 implements Comparable<Int1024> {
      *
      * @param a the first integer
      * @param b the second integer
-     *
      * @return the result of the addition
      */
     public static Int1024 add(Int1024 a, Int1024 b) {
         return new Int1024(a).add(b);
+    }
+
+    /**
+     * Shift an integer left by a given number of bits
+     *
+     * @param num  the integer to shift
+     * @param bits the number of bits to shift by
+     *
+     * @return an integer that is shifted by the given amount
+     */
+    public static Int1024 shiftLeft(Int1024 num, int bits) {
+        return new Int1024(num).shiftLeft(bits);
+    }
+
+    /**
+     * Shift this integer left by a given number of bits
+     *
+     * @param bits the number of bits to shift by
+     *
+     * @return this for chaining
+     */
+    public Int1024 shiftLeft(int bits) {
+        this.data = CommonUtils.shiftLeft(this.data, bits);
+        return this;
+    }
+
+    /**
+     * Subtract two integers returning a new integer object
+     *
+     * @param a the first integer
+     * @param b the second integer
+     *
+     * @return the result of the subtraction
+     */
+    public static Int1024 subtract(Int1024 a, Int1024 b) {
+        return new Int1024(a).subtract(b);
+    }
+
+    /**
+     * Subtracts another integer from this one
+     *
+     * This modifies the current integer
+     *
+     * @param b the other integer
+     *
+     * @return this for chaining
+     */
+    public Int1024 subtract(Int1024 b) {
+        return add(Int1024.negate(b));
     }
 
     /**
@@ -138,7 +184,6 @@ public final class Int1024 implements Comparable<Int1024> {
      * Negate a given integer
      *
      * @param a the integer to negate
-     *
      * @return the result of the negation
      */
     public static Int1024 negate(Int1024 a) {
@@ -146,69 +191,12 @@ public final class Int1024 implements Comparable<Int1024> {
     }
 
     /**
-     * Subtract two integers returning a new integer object
-     *
-     * @param a the first integer
-     * @param b the second integer
-     *
-     * @return the result of the subtraction
-     */
-    public static Int1024 subtract(Int1024 a, Int1024 b) {
-        return new Int1024(a).subtract(b);
-    }
-
-    /**
-     * Shift an integer left by a given number of bits
-     *
-     * @param num  the integer to shift
-     * @param bits the number of bits to shift by
-     *
-     * @return an integer that is shifted by the given amount
-     */
-    public static Int1024 shiftLeft(Int1024 num, int bits) {
-        return new Int1024(num).shiftLeft(bits);
-    }
-
-    /**
-     * Shift this integer left by a given number of bits
-     *
-     * @param bits the number of bits to shift by
-     *
-     * @return this for chaining
-     */
-    public Int1024 shiftLeft(int bits) {
-        if (bits < 0) {
-            throw new IllegalArgumentException("Cannot shift by negative amount");
-        }
-        long[] result = new long[LONGS];
-        int longs = bits / 64;
-        int singleBits = bits % 64;
-
-        long mask = ~(-1L << singleBits);
-
-        for (int i = LONGS - 1; i >= 0; i--) {
-            if (i + longs >= LONGS) {
-                result[i] = 0;
-            } else if (i + longs + 1 >= LONGS) {
-                result[i] = (this.data[i + longs] << singleBits);
-            } else {
-                result[i] = ((this.data[i + longs] << singleBits) |
-                             ((this.data[i + longs + 1] >> (64 - singleBits)) & mask));
-            }
-        }
-
-        System.arraycopy(result, 0, this.data, 0, LONGS);
-        return this;
-    }
-
-    /**
      * Shift an integer right by a given number of bits
      *
      * This will fill the new left bits with 0s
      *
-     * @param num  the integer to shift
+     * @param num the integer to shift
      * @param bits the number of bits to shift by
-     *
      * @return an integer that is shifted by the given amount
      */
     public static Int1024 shiftRightUnsigned(Int1024 num, int bits) {
@@ -225,85 +213,8 @@ public final class Int1024 implements Comparable<Int1024> {
      * @return this for chaining
      */
     public Int1024 shiftRightUnsigned(int bits) {
-        if (bits < 0) {
-            throw new IllegalArgumentException("Cannot shift by negative amount");
-        }
-
-        long[] result = new long[LONGS];
-        int longs = bits / 64;
-        int singleBits = bits % 64;
-
-        for (int i = LONGS - 1; i >= 0; i--) {
-            if (i - longs < 0) {
-                result[i] = 0;
-            } else if (i - longs < 1) { //i - bytes == 0
-                result[i] = (this.data[i - longs] >>> singleBits);
-            } else {
-                result[i] = ((this.data[i - longs] >>> singleBits) |
-                             (this.data[i - longs - 1] << (64 - singleBits)));
-            }
-        }
-
-        System.arraycopy(result, 0, this.data, 0, LONGS);
+        this.data = CommonUtils.shiftRightUnsigned(this.data, bits);
         return this;
-    }
-
-    /**
-     * Shift an integer right by a given number of bits
-     *
-     * This will fill the new left bits with the sign bit
-     *
-     * @param num  the integer to shift
-     * @param bits the number of bits to shift by
-     *
-     * @return an integer that is shifted by the given amount
-     */
-    public static Int1024 shiftRightSigned(Int1024 num, int bits) {
-        return new Int1024(num).shiftRightSigned(bits);
-    }
-
-    /**
-     * Shift this integer right by a given number of bits
-     *
-     * This will fill the new left bits with the sign bit
-     *
-     * @param bits the number of bits to shift by
-     *
-     * @return this for chaining
-     */
-    public Int1024 shiftRightSigned(int bits) {
-        if (bits < 0) {
-            throw new IllegalArgumentException("Cannot shift by negative amount");
-        }
-
-        long[] result = new long[LONGS];
-        int longs = bits / 64;
-        int singleBits = bits % 64;
-
-        long signLong = data[0] < 0 ? -1L : 0;
-
-        for (int i = LONGS - 1; i >= 0; i--) {
-            if (i - longs < 0) {
-                result[i] = signLong;
-            } else if (i - longs < 1) { //i - bytes == 0
-                result[i] = ((this.data[i - longs] >>> singleBits) |
-                             (signLong << (64 - singleBits)));
-            } else {
-                result[i] = ((this.data[i - longs] >>> singleBits) |
-                             (this.data[i - longs - 1] << (64 - singleBits)));
-            }
-        }
-
-        System.arraycopy(result, 0, this.data, 0, LONGS);
-        return this;
-    }
-
-    private static void setBit(long[] longs, int bit, int val) {
-        if (val == 0) {
-            longs[longs.length - 1 - (bit / 64)] &= ~(1L << (bit % 64));
-        } else {
-            longs[longs.length - 1 - (bit / 64)] |= (1L << (bit % 64));
-        }
     }
 
     /**
@@ -311,7 +222,6 @@ public final class Int1024 implements Comparable<Int1024> {
      *
      * @param a the first integer
      * @param b the second integer
-     *
      * @return the result of the multiplication
      */
     public static Int1024 multiply(Int1024 a, Int1024 b) {
@@ -324,7 +234,6 @@ public final class Int1024 implements Comparable<Int1024> {
      * This modifies the current integer
      *
      * @param b the integer to multiply by
-     *
      * @return this for chaining
      */
     public Int1024 multiply(Int1024 b) {
@@ -353,11 +262,38 @@ public final class Int1024 implements Comparable<Int1024> {
     }
 
     /**
+     * Shift an integer right by a given number of bits
+     *
+     * This will fill the new left bits with the sign bit
+     *
+     * @param num  the integer to shift
+     * @param bits the number of bits to shift by
+     *
+     * @return an integer that is shifted by the given amount
+     */
+    public static Int1024 shiftRightSigned(Int1024 num, int bits) {
+        return new Int1024(num).shiftRightSigned(bits);
+    }
+
+    /**
+     * Shift this integer right by a given number of bits
+     *
+     * This will fill the new left bits with the sign bit
+     *
+     * @param bits the number of bits to shift by
+     *
+     * @return this for chaining
+     */
+    public Int1024 shiftRightSigned(int bits) {
+        this.data = CommonUtils.shiftRightSigned(this.data, bits);
+        return this;
+    }
+
+    /**
      * Divide an integer by another
      *
      * @param dividend the numerator or dividend integer
-     * @param divisor  the denominator or divisor integer
-     *
+     * @param divisor the denominator or divisor integer
      * @return the result of the division
      */
     public static Int1024 divide(Int1024 dividend, Int1024 divisor) {
@@ -365,23 +301,10 @@ public final class Int1024 implements Comparable<Int1024> {
     }
 
     /**
-     * Divide an integer by another and get the remainder
-     *
-     * @param dividend the numerator or dividend integer
-     * @param divisor  the denominator or divisor integer
-     *
-     * @return the remainder of the division
-     */
-    public static Int1024 remainder(Int1024 dividend, Int1024 divisor) {
-        return division(dividend, divisor)[1];
-    }
-
-    /**
      * Combined division and remainder method
      *
      * @param n the numerator or dividend integer
      * @param d the denominator or divisor integer
-     *
      * @return an array where the first element is the quotient and the second is the remainder
      */
     public static Int1024[] division(Int1024 n, Int1024 d) {
@@ -419,45 +342,6 @@ public final class Int1024 implements Comparable<Int1024> {
     }
 
     /**
-     * Gets the absolute value of an integer
-     *
-     * @param num the integer to get the absolute value of
-     *
-     * @return the absolute value of the integer
-     */
-    public static Int1024 abs(Int1024 num) {
-        return new Int1024(num).abs();
-    }
-
-    /**
-     * Negate this integer
-     *
-     * This modifies the current integer
-     *
-     * @return this for chaining
-     */
-    public Int1024 negate() {
-        for (int i = 0; i < LONGS; i++) {
-            data[i] = ~data[i];
-        }
-
-        return add(ONE);
-    }
-
-    /**
-     * Subtracts another integer from this one
-     *
-     * This modifies the current integer
-     *
-     * @param b the other integer
-     *
-     * @return this for chaining
-     */
-    public Int1024 subtract(Int1024 b) {
-        return add(Int1024.negate(b));
-    }
-
-    /**
      * Get a given bit of this integer
      *
      * @param bit the bit to get
@@ -478,6 +362,51 @@ public final class Int1024 implements Comparable<Int1024> {
         setBit(data, bit, val);
     }
 
+    private static void setBit(long[] longs, int bit, int val) {
+        if (val == 0) {
+            longs[longs.length - 1 - (bit / 64)] &= ~(1L << (bit % 64));
+        } else {
+            longs[longs.length - 1 - (bit / 64)] |= (1L << (bit % 64));
+        }
+    }
+
+    /**
+     * Divide an integer by another and get the remainder
+     *
+     * @param dividend the numerator or dividend integer
+     * @param divisor  the denominator or divisor integer
+     *
+     * @return the remainder of the division
+     */
+    public static Int1024 remainder(Int1024 dividend, Int1024 divisor) {
+        return division(dividend, divisor)[1];
+    }
+
+    /**
+     * Gets the absolute value of an integer
+     *
+     * @param num the integer to get the absolute value of
+     *
+     * @return the absolute value of the integer
+     */
+    public static Int1024 abs(Int1024 num) {
+        return new Int1024(num).abs();
+    }
+
+    /**
+     * Gets the absolute value of this integer
+     *
+     * Modifies this integer
+     *
+     * @return this for chaining
+     */
+    public Int1024 abs() {
+        if (compareTo(ZERO) < 0) {
+            return negate();
+        }
+        return this;
+    }
+
     /**
      * Divides this integer by the given one
      *
@@ -493,6 +422,21 @@ public final class Int1024 implements Comparable<Int1024> {
     }
 
     /**
+     * Negate this integer
+     *
+     * This modifies the current integer
+     *
+     * @return this for chaining
+     */
+    public Int1024 negate() {
+        for (int i = 0; i < LONGS; i++) {
+            data[i] = ~data[i];
+        }
+
+        return add(ONE);
+    }
+
+    /**
      * Divides this integer by the given one and get the remainder
      *
      * This modifies the current integer
@@ -503,20 +447,6 @@ public final class Int1024 implements Comparable<Int1024> {
      */
     public Int1024 remainder(Int1024 divisor) {
         this.data = division(this, divisor)[1].data;
-        return this;
-    }
-
-    /**
-     * Gets the absolute value of this integer
-     *
-     * Modifies this integer
-     *
-     * @return this for chaining
-     */
-    public Int1024 abs() {
-        if (compareTo(ZERO) < 0) {
-            return negate();
-        }
         return this;
     }
 
