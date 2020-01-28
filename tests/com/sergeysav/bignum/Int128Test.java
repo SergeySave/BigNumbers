@@ -1,3 +1,6 @@
+package com.sergeysav.bignum;
+
+import com.sergeysav.bignum.Int128;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

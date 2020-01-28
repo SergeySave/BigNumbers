@@ -1,3 +1,5 @@
+package com.sergeysav.bignum;
+
 /**
  * @author sergeys
  */
@@ -13,7 +15,7 @@ public class Timing {
             long before = System.nanoTime();
             for (int i = 0; i < TIMES; i++) {
                 num.add(added);
-                //                num.add(Int2048.ONE);
+                //                num.add(com.sergeysav.bignum.Int2048.ONE);
             }
             long after = System.nanoTime();
             time128 += (after - before);

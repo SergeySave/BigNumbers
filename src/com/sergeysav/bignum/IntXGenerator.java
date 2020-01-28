@@ -1,3 +1,8 @@
+package com.sergeysav.bignum;
+
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  * @author sergeys
  */
@@ -16,7 +21,9 @@ public class IntXGenerator {
     }
 
     public String generateClass() {
-        return "import java.util.Arrays;\n" +
+        return "package com.sergeysav.bignum;\n" +
+               "\n" +
+               "import java.util.Arrays;\n" +
                "\n" +
                "/**\n" +
                " * Represents a " + bits + " bit 2's complement integer\n" +
@@ -37,11 +44,22 @@ public class IntXGenerator {
                "    /**\n" +
                "     * A constant equal to one\n" +
                "     */\n" +
-               "    public static final Int" + bits + " ONE  = Int" + bits + ".from(1);\n" +
+               "    public static final Int" + bits + " ONE = Int" + bits + ".from(1);\n" +
                "    /**\n" +
                "     * A constant equal to ten\n" +
                "     */\n" +
-               "    public static final Int" + bits + " TEN  = Int" + bits + ".from(10);\n" +
+               "    public static final Int" + bits + " TEN = Int" + bits + ".from(10);\n" +
+               "    /**\n" +
+               "     * The maximum value\n" +
+               "     */\n" +
+               "    public static final Int" + bits + " MAX_VALUE = Int" + bits + ".bytesOf(Long.MAX_VALUE, " + IntStream.rangeClosed(2, longs).mapToObj((unused) -> "-1L").collect(
+                Collectors.joining(", ")) + ");\n" +
+               "\n" +
+               "    /**\n" +
+               "     * The minimum value\n" +
+               "     */\n" +
+               "    public static final Int" + bits + " MIN_VALUE = Int" + bits + ".bytesOf(Long.MIN_VALUE, " + IntStream.rangeClosed(2, longs).mapToObj((unused) -> "0L").collect(
+                Collectors.joining(", ")) + ");\n" +
                "\n" +
                "    /**\n" +
                "     * The backing bits (stored as longs)\n" +
@@ -204,7 +222,7 @@ public class IntXGenerator {
                "     * @return this for chaining\n" +
                "     */\n" +
                "    public Int" + bits + " shiftLeft(int bits) {\n" +
-               "        this.data = CommonUtils.shiftLeft(this.data, bits);\n" +
+               "        this.data = com.sergeysav.bignum.CommonUtils.shiftLeft(this.data, bits);\n" +
                "        return this;" +
                "    }\n" +
                "\n" +
@@ -217,7 +235,7 @@ public class IntXGenerator {
                "     * @return this for chaining\n" +
                "     */\n" +
                "    public Int" + bits + " shiftRightUnsigned(int bits) {\n" +
-               "        this.data = CommonUtils.shiftRightUnsigned(this.data, bits);\n" +
+               "        this.data = com.sergeysav.bignum.CommonUtils.shiftRightUnsigned(this.data, bits);\n" +
                "        return this;" +
                "    }\n" +
                "\n" +
@@ -230,7 +248,7 @@ public class IntXGenerator {
                "     * @return this for chaining\n" +
                "     */\n" +
                "    public Int" + bits + " shiftRightSigned(int bits) {\n" +
-               "        this.data = CommonUtils.shiftRightSigned(this.data, bits);\n" +
+               "        this.data = com.sergeysav.bignum.CommonUtils.shiftRightSigned(this.data, bits);\n" +
                "        return this;\n" +
                "    }\n" +
                "\n" +
